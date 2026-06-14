@@ -1,0 +1,9 @@
+# Ignore everything by default
+*
+
+# Allow these specific files
+!index.html
+!app.js
+!styles.css
+!README.md
+!.gitignore

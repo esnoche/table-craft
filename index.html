@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" id="themeColorMeta" content="#0f1419">
+  <title>JSON Explorer</title>
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>JSON Explorer</h1>
+    <div class="header-actions">
+      <button id="btnTheme" class="btn btn-ghost" aria-label="Toggle theme">Light</button>
+      <button id="btnReset" class="btn btn-ghost hidden">Load new file</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="loadScreen" class="card">
+      <h2>Load JSON</h2>
+      <p class="muted">Upload a <code>.json</code> or <code>.txt</code> file, or paste JSON below.</p>
+      <div class="load-options">
+        <label class="btn btn-primary">
+          <input type="file" id="fileInput" accept=".json,.txt,application/json,text/plain" hidden>
+          Choose file
+        </label>
+        <span class="muted">or</span>
+        <button id="btnPaste" class="btn btn-secondary">Paste JSON</button>
+      </div>
+      <div id="pasteArea" class="hidden">
+        <textarea id="pasteInput" rows="10" placeholder="Paste JSON here..."></textarea>
+        <button id="btnLoadPaste" class="btn btn-primary">Load</button>
+      </div>
+      <div id="loadError" class="error hidden"></div>
+    </section>
+
+    <section id="arrayPickerScreen" class="card hidden">
+      <h2>Pick the record array</h2>
+      <p class="muted">This JSON has several arrays. Which one contains your records?</p>
+      <div id="arrayOptions"></div>
+    </section>
+
+    <section id="viewerScreen" class="hidden">
+      <div class="card">
+        <div class="viewer-head">
+          <div>
+            <strong id="datasetName">Records</strong>
+            <div class="muted small" id="datasetCount"></div>
+          </div>
+          <div class="viewer-actions">
+            <button id="btnToggleConfig" class="btn btn-ghost">Configure fields</button>
+          </div>
+        </div>
+
+        <div id="configPanel" class="config-panel hidden">
+          <p class="muted small">Choose which fields can be searched, filtered, or shown in the table.</p>
+          <div class="field-config-table">
+            <div class="field-config-header">
+              <span>Field</span>
+              <span>Type</span>
+              <span title="Include in global search">Search</span>
+              <span title="Show dedicated filter">Filter</span>
+              <span title="Show column in table">Show</span>
+            </div>
+            <div id="fieldList"></div>
+          </div>
+          <div class="config-actions">
+            <button id="btnSelectAllVisible" class="btn btn-ghost small-btn">Show all</button>
+            <button id="btnSelectNoneVisible" class="btn btn-ghost small-btn">Hide all</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="search-row">
+          <label class="muted small page-size-label">Page size
+            <select id="pageSizeSelect">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+          <input type="search" id="searchInput" placeholder="Search..." autocomplete="off">
+          <button id="btnToggleFilters" class="btn btn-ghost">Filters</button>
+          <button id="btnClear" class="btn btn-ghost">Clear</button>
+          <button id="btnColumns" class="btn btn-ghost">Columns</button>
+        </div>
+        <div id="filterPanel" class="filter-panel hidden"></div>
+        <div class="table-wrap">
+          <table id="resultsTable">
+            <thead id="resultsHead"></thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="muted small pagination-summary" id="resultSummary"></span>
+          <div class="pagination-buttons">
+            <button id="btnFirst" class="btn btn-ghost" aria-label="First">&laquo;</button>
+            <button id="btnPrev" class="btn btn-ghost" aria-label="Previous">&lsaquo;</button>
+            <span id="pageIndicator" class="muted small"></span>
+            <button id="btnNext" class="btn btn-ghost" aria-label="Next">&rsaquo;</button>
+            <button id="btnLast" class="btn btn-ghost" aria-label="Last">&raquo;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="columnsPopover" class="popover hidden">
+    <div class="popover-inner">
+      <h3>Table columns</h3>
+      <p class="muted small">Tick the fields you want as columns in the results table.</p>
+      <div id="columnsList"></div>
+      <div class="popover-actions">
+        <button id="btnCloseColumns" class="btn btn-primary">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="recordPopover" class="popover hidden">
+    <div class="popover-inner">
+      <h3>Record</h3>
+      <pre id="recordJson" class="record-json"></pre>
+      <div class="popover-actions">
+        <button id="btnCloseRecord" class="btn btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
